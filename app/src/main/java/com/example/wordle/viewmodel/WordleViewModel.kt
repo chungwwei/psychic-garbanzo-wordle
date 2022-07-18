@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.wordle.model.Wordle
+import com.example.wordle.model.WordleCell
 
 class WordleViewModel : ViewModel() {
 
@@ -44,7 +45,7 @@ class WordleViewModel : ViewModel() {
         val notPresentKeys = _uiState.value!!.notPresentKeys
         var row = uiState.value!!.currentTryIndex
 
-        val list = board[row]
+        val list = board[row].map { element -> element.key }
         val lastAlphaIndex = lastAlphaIndex(list)
         // row is empty
         if (lastAlphaIndex != 4) {
@@ -89,7 +90,9 @@ class WordleViewModel : ViewModel() {
         val notPresentKeys = _uiState.value!!.notPresentKeys
         var row = uiState.value!!.currentTryIndex
 
-        val list = board[row]
+        val list = board[row].map {
+            element -> element.key
+        }
 
         val lastAlphaIndex = lastAlphaIndex(list)
         // row is empty
@@ -97,13 +100,21 @@ class WordleViewModel : ViewModel() {
             return
         }
 
-        val newBoard = board.mapIndexed { index, list ->
+        val newBoard: List<List<WordleCell>> = board.mapIndexed { index, list ->
             if (index != row) {
                 list
             } else {
                 list.mapIndexed {
                         j, element ->
-                    if (j == lastAlphaIndex) "" else element
+                    if (j == lastAlphaIndex) {
+                        WordleCell(
+                            key = "",
+                            isKeyPresent = false,
+                            isKeyPlacementCorrect = false,
+                        )
+                    } else {
+                        element.copy()
+                    }
                 }
 
             }
@@ -121,7 +132,7 @@ class WordleViewModel : ViewModel() {
         val notPresentKeys = _uiState.value!!.notPresentKeys
         var row = uiState.value!!.currentTryIndex
 
-        val list = board[row]
+        val list = board[row].map { element -> element.key }
 
         val lastAlphaIndex = lastAlphaIndex(list)
         // row is filled
@@ -133,13 +144,17 @@ class WordleViewModel : ViewModel() {
         var col: Int = list.indexOf("")
 
 
-        val newBoard = board.mapIndexed { index, list ->
+        val newBoard: List<List<WordleCell>> = board.mapIndexed { index, list ->
             if (index != row) {
                 list
             } else {
                 list.mapIndexed {
                     j, element ->
-                        if (j == col) key else element
+                        if (j == col) {
+                            WordleCell(key = key, isKeyPresent =  false, isKeyPlacementCorrect = false)
+                        } else {
+                            element.copy()
+                        }
                 }
 
             }

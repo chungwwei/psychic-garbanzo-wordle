@@ -88,7 +88,7 @@ fun BuildBoard(
                 horizontalArrangement = Arrangement.Center
             ) {
                 it.map {
-                    BoardCell(char = it)
+                    BoardCell(char = it.key)
                 }
             }
         }
