@@ -60,18 +60,17 @@ class WordleViewModel : ViewModel() {
         println("list: $list");
         println("list candidate: $candidate")
 
-        // is a word
+        // is not a word
         var lst = notPresentKeys.toMutableList()
-        if (candidate in setOf("IRATE", "COULD", "WOULD", "QUICK", "PLANT", "COUNT", "WHEAT")) {
-            // add each char not in answer to notPresentKeys
-            candidate.forEach { c ->
-                if (c !in answer.value!!) {
-                    lst.add(c.toString())
-                }
-            }
+        if (candidate !in setOf("IRATE", "COULD", "WOULD", "QUICK", "PLANT", "COUNT", "WHEAT", "QUAKE", "QUEEN")) {
+            return
+        }
 
-            // tick row
-            row += 1
+        // add each char not in answer to notPresentKeys
+        candidate.forEach { c ->
+            if (c !in answer.value!!) {
+                lst.add(c.toString())
+            }
         }
 
         val newBoard = board.mapIndexed { index, list ->
@@ -80,12 +79,20 @@ class WordleViewModel : ViewModel() {
             } else {
                 list.mapIndexed {
                         j, element ->
-                    element
+                    // same position
+                    if (element.key == answer.value!!.get(j).toString()) {
+                        WordleCell(element.key, isKeyPresent = true, isKeyPlacementCorrect = true)
+                    } else {
+                        WordleCell(element.key, isKeyPresent = element.key in answer.value!!, isKeyPlacementCorrect = false)
+                    }
                 }
 
             }
         }
-        println("where notPresentKeys: ${lst.toSet()}")
+
+        // tick row
+        row += 1
+
 
         _uiState.value = Wordle(
             row,

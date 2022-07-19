@@ -3,6 +3,7 @@ package com.example.wordle
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -55,13 +56,15 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BoardCell(char: String) {
+fun BoardCell(char: String, color: Color) {
     Box(
         modifier = Modifier
             .size(width = 72.dp, height = 72.dp)
+            .background(color)
             .padding(1.dp)
             .border(width = 2.dp, color = Color.Black),
         contentAlignment = Alignment.Center
+
     ){
         Text(text = char, textAlign = TextAlign.Center)
     }
@@ -75,6 +78,7 @@ fun BuildBoard(
     val uiState by worldViewModel.uiState.observeAsState(Wordle())
     val cnt by worldViewModel.count.observeAsState(initial = 0)
     val board = uiState.board
+    val notPresentKeys = uiState.notPresentKeys
 
     Column(
         modifier = Modifier
@@ -88,7 +92,16 @@ fun BuildBoard(
                 horizontalArrangement = Arrangement.Center
             ) {
                 it.map {
-                    BoardCell(char = it.key)
+                    val isKeyPresent = it.isKeyPresent
+                    val isPlacementCorrect = it.isKeyPlacementCorrect
+                    val color = if (isKeyPresent && isPlacementCorrect) {
+                        Color.Green
+                    } else if (isKeyPresent && !isPlacementCorrect) {
+                        Color.Yellow
+                    } else {
+                        Color.White
+                    }
+                    BoardCell(char = it.key, color = color)
                 }
             }
         }
