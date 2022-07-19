@@ -9,10 +9,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -112,9 +109,14 @@ fun BuildBoard(
 @Composable
 fun KeyButton(
     name: String,
-    isEnabled: Boolean,
+    isGrayOut: Boolean,
     onKeyClick: (String) -> Unit
 ) {
+    val color = if (isGrayOut) {
+        Color.Gray
+    } else {
+        Color.Transparent
+    }
     Button(
         modifier = Modifier
             .size(width = 36.dp, height = 48.dp)
@@ -124,7 +126,7 @@ fun KeyButton(
         onClick = {
             onKeyClick(name)
         },
-        enabled = isEnabled,
+        colors = ButtonDefaults.buttonColors(backgroundColor = color)
     ) {
         Text("$name", textAlign = TextAlign.Center)
     }
@@ -148,9 +150,8 @@ fun BuildKeyboard(
         ) {
             Box{}
             list1.map { it ->
-                val isEnabled = !notPresentKeys.contains(it)
-                println("isEnabled is ${it} $isEnabled")
-                KeyButton(name = it, isEnabled = isEnabled, onKeyClick = {
+                val isGrayOut = notPresentKeys.contains(it)
+                KeyButton(name = it, isGrayOut = isGrayOut, onKeyClick = {
                     wordleViewModel.onKeyPress(it)
                 })
             }
@@ -164,8 +165,8 @@ fun BuildKeyboard(
         ) {
             Box{}
             list2.map {
-                val isEnabled = !notPresentKeys.contains(it)
-                KeyButton(name = it, isEnabled = isEnabled, onKeyClick = {
+                val isGrayOut = notPresentKeys.contains(it)
+                KeyButton(name = it, isGrayOut = isGrayOut, onKeyClick = {
                     wordleViewModel.onKeyPress(it)
                 })
             }
@@ -188,8 +189,8 @@ fun BuildKeyboard(
                 Text("Enter")
             }
             list3.map {
-                val isEnabled = !notPresentKeys.contains(it)
-                KeyButton(name = it, isEnabled = isEnabled, onKeyClick = {
+                val isGrayOut = notPresentKeys.contains(it)
+                KeyButton(name = it, isGrayOut = isGrayOut, onKeyClick = {
                     wordleViewModel.onKeyPress(it)
                 })
             }
