@@ -17,6 +17,9 @@ class WordleViewModel : ViewModel() {
     private val _count = MutableLiveData<Int>(0)
     val count: LiveData<Int> = _count
 
+    private val _answer = MutableLiveData<String>("QUICK")
+    val answer: LiveData<String> = _answer
+
     init {
         val initState = Wordle()
         _uiState.value = initState
@@ -53,13 +56,19 @@ class WordleViewModel : ViewModel() {
         }
 
         // row is filled
-        val candidate = list.joinToString(separator = "").lowercase()
+        val candidate = list.joinToString(separator = "")
         println("list: $list");
         println("list candidate: $candidate")
 
         // is a word
-        if (candidate in setOf("irate", "could", "would", "quick")) {
+        var lst = notPresentKeys.toMutableList()
+        if (candidate in setOf("IRATE", "COULD", "WOULD", "QUICK", "PLANT", "COUNT", "WHEAT")) {
             // add each char not in answer to notPresentKeys
+            candidate.forEach { c ->
+                if (c !in answer.value!!) {
+                    lst.add(c.toString())
+                }
+            }
 
             // tick row
             row += 1
@@ -76,10 +85,11 @@ class WordleViewModel : ViewModel() {
 
             }
         }
+        println("where notPresentKeys: ${lst.toSet()}")
 
         _uiState.value = Wordle(
             row,
-            emptySet<String>().toSet(),
+            lst.toSet(),
             newBoard,
         )
 
@@ -121,7 +131,7 @@ class WordleViewModel : ViewModel() {
         }
         _uiState.value = Wordle(
             row,
-            emptySet<String>().toSet(),
+            notPresentKeys.toSet(),
             newBoard,
         )
 
@@ -166,7 +176,7 @@ class WordleViewModel : ViewModel() {
 
         _uiState.value = Wordle(
             row,
-            emptySet<String>().toSet(),
+            notPresentKeys.toSet(),
             newBoard,
         )
 

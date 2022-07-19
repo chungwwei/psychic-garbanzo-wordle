@@ -111,7 +111,7 @@ fun KeyButton(
         onClick = {
             onKeyClick(name)
         },
-        enabled = true,
+        enabled = isEnabled,
     ) {
         Text("$name", textAlign = TextAlign.Center)
     }
@@ -126,6 +126,8 @@ fun BuildKeyboard(
 ) {
     val uiState by wordleViewModel.uiState.observeAsState(Wordle())
     val board = uiState.board
+    val notPresentKeys = uiState.notPresentKeys
+    println("composekeys is $notPresentKeys")
     Column() {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -133,7 +135,9 @@ fun BuildKeyboard(
         ) {
             Box{}
             list1.map { it ->
-                KeyButton(name = it, isEnabled = true, onKeyClick = {
+                val isEnabled = !notPresentKeys.contains(it)
+                println("isEnabled is ${it} $isEnabled")
+                KeyButton(name = it, isEnabled = isEnabled, onKeyClick = {
                     wordleViewModel.onKeyPress(it)
                 })
             }
@@ -147,7 +151,8 @@ fun BuildKeyboard(
         ) {
             Box{}
             list2.map {
-                KeyButton(name = it, isEnabled = true, onKeyClick = {
+                val isEnabled = !notPresentKeys.contains(it)
+                KeyButton(name = it, isEnabled = isEnabled, onKeyClick = {
                     wordleViewModel.onKeyPress(it)
                 })
             }
@@ -170,7 +175,8 @@ fun BuildKeyboard(
                 Text("Enter")
             }
             list3.map {
-                KeyButton(name = it, isEnabled = true, onKeyClick = {
+                val isEnabled = !notPresentKeys.contains(it)
+                KeyButton(name = it, isEnabled = isEnabled, onKeyClick = {
                     wordleViewModel.onKeyPress(it)
                 })
             }
